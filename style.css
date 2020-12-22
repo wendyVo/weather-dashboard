@@ -1,0 +1,24 @@
+header {
+    padding: 10px;
+}
+
+.uvRed {
+    background-color: red;
+    color: white;
+    padding: 0.5em;
+    margin-left: 0.5em;
+}
+
+.uvGreen {
+    background-color: green;
+    color: white;
+    padding: 0.5em;
+    margin-left: 0.5em;
+}
+
+.uvOrange {
+    background-color: orange;
+    color: white;
+    padding: 0.5em;
+    margin-left: 0.5em;
+}

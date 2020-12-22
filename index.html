@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Dashboard</title>
+    <!-- Bootstrap CSS CDN  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/css/bootstrap.min.css" />
+    <!-- Font Awesome CSS Icons (For cool glyphicons) -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" />
+    <!-- CSS Style  -->
+    <link rel="stylesheet" href="./style.css" />
+</head>
+
+<body>
+    <!-- Jumbotron for Title -->
+    <header style="background-color: #20315A ; color: white;">
+        <h1 class="text-center">
+            <strong>Weather Dashboard</strong>
+        </h1>
+    </header>
+    <div class="container mt-3">
+        <div class="row">
+            <div class="col-4">
+                <h3>Search for a city:</h3>
+                <form class="form-inline md-form mt-3 mr-auto mb-4">
+                    <input class="form-control mr-sm-2" id="city-input" type="text" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-primary btn-rounded btn-lg" id="add-city" type="submit"><i class="fa fa-search"></i></button>
+                </form>
+                <div class="card">
+                    <ul class="list-group list-group-flush" id="search-history"></ul>
+                </div>
+            </div>
+            <div class="col-8">
+                <div class="row" id="current-forecast"></div>
+                <div class="row" id="fiveDayForeCast"></div>
+
+            </div>
+        </div>
+    </div>
+    <!-- jQuery JS -->
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0/js/bootstrap.bundle.min.js"></script>
+    <!-- Code to the JavaScript File -->
+    <script src="script.js"></script>
+</body>
+
+</html>
