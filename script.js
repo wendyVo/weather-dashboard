@@ -47,7 +47,7 @@ $(document).ready(function() {
 
                 //create html for current weather
                 var title = $("<h2>").addClass("card-title").text(data.name + " (" + today + ")");
-                var card = $("<div>").addClass("card");
+                var card = $("<div>").addClass("card currentDiv");
                 var wind = $("<p>").addClass("card-text").text("Wind Speed: " + data.wind.speed + " MPH");
                 var humid = $("<p>").addClass("card-text").text("Humidity: " + data.main.humidity + "%");
                 var temp = $("<p>").addClass("card-text").text("Temperature: " + data.main.temp + "°F");
@@ -97,10 +97,12 @@ $(document).ready(function() {
                     //build html for five day forecasts
                     //because in forecast five day, each list is increased by 3 hours. 
                     //therefore, for a new day, need to increase 8 times 3* 8 = 24 hrs
-                    var cardDeck = $("<div>").addClass("card-deck");
+
+                    var cardDeck = $("<div>").addClass("card-deck forecastDiv");
+                    var forecastTitle = $("<h2>").addClass("ftitle").text("5-day Forecast");
                     for (var i = 4; i < forecastList.length; i += 8) {
                         //creating a div
-                        var fiveDayCard = $("<div>").addClass("card");
+                        var fiveDayCard = $("<div>").addClass("card fiveCard");
                         // var fiveDay = new Date(forecastList[i] * 1000).toLocaleDateString();
                         var fiveDay = moment(forecastList[i].dt_txt.split(" ")[0]).format('DD/MM/YYYY');
                         var fiveImg = $("<img>").addClass("card-text").attr("src", "https://openweathermap.org/img/wn/" + forecastList[i].weather[0].icon + "@2x.png");
@@ -110,7 +112,7 @@ $(document).ready(function() {
                         var dayTitle = $("<h5>").addClass("card-title").text(fiveDay);
                         fiveDayCard.append(dayTitle, fiveImg, fiveTemp, fiveHumid);
                         cardDeck.append(fiveDayCard);
-                        $("#fiveDayForeCast").append(cardDeck);
+                        $("#fiveDayForeCast").append(forecastTitle, cardDeck);
                         console.log(dayTitle);
                     }
                 });
@@ -118,6 +120,7 @@ $(document).ready(function() {
             }
         })
     }
+
 
     //set variable and render for search history
     var historySearch = JSON.parse(window.localStorage.getItem("historySearch")) || [];

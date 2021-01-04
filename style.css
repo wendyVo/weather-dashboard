@@ -7,6 +7,28 @@ header {
     padding: 1em;
 }
 
+.currentDiv {
+    width: 100%;
+    background-color: lightsalmon;
+    padding-left: 1em;
+}
+
+.forecastDiv {
+    width: 100%;
+    padding-left: 1em
+}
+
+.ftitle {
+    padding: 1em;
+}
+
+.fiveCard {
+    background-color: #00FFFF;
+    color: white;
+    padding: 0.5em;
+    align-content: left;
+}
+
 .uvRed {
     background-color: red;
     color: white;
