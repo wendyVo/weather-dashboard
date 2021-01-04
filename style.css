@@ -2,6 +2,11 @@ header {
     padding: 10px;
 }
 
+.searchDiv {
+    background-color: bisque;
+    padding: 1em;
+}
+
 .uvRed {
     background-color: red;
     color: white;

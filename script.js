@@ -1,138 +1,139 @@
- var cities = [];
- var APIKey = "218d683cbf2e7058f072e07e91703e04";
- //Functions for displaying current weather info
- function displayCurrentWeather(searchCity) {
-     var searchCity = $("#city-input").val().trim();
-     //  var city = $(this).attr("data-name");
-     // This is our API key
-     var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + searchCity + "&appid=" + APIKey;
+$(document).ready(function() {
+    //Global variables
+    var APIKey = "218d683cbf2e7058f072e07e91703e04";
 
-     $.ajax({
-         url: queryURL,
-         method: "GET"
-     }).then(function(response) {
-         //  $("#current-forecast").text(JSON.stringify(response));
-         //Get City
-         var cityName = response.name;
-         //Get current date
-         var today = new Date(response.dt * 1000).toLocaleDateString();
-         //Get icons
-         var currentIcon = "https://openweathermap.org/img/wn/" + response.weather[0].icon + "@2x.png";
+    //When the Search Button clicked
+    $("#add-city").on("click", function(event) {
+        event.preventDefault();
 
-         // Creating an element to have the rating displayed
-         var pOne = $("<h2>").html(cityName + " (" + today + ")" + "<img src=" + currentIcon + ">");
-         $("#current-forecast").append(pOne);
+        //This line grabs the input from the textbox
+        var citySearch = $("#city-input").val().trim();
+        //empty the search box after click button
+        $("#city-input").val("");
 
-         //Get current temperature from K to F
-         var currentTemp = (response.main.temp - 273.15) * 1.80 + 32;
-         var tempP = $("<p>").html("Temperature: " + (currentTemp).toFixed(2) + "&#8457");
-         $("#current-forecast").append(tempP);
+        currentWeather(citySearch);
+        fiveDayForecast(citySearch)
+    });
 
-         //Get Humidity
-         var HumP = $("<p>").html("Humidity: " + response.main.humidity + "%");
-         $("#current-forecast").append(HumP);
+    //create row function for history
+    function makeRow(value) {
+        var li = $("<li>");
+        li.addClass("list-group-item");
+        li.text(value);
+        $("#search-history").append(li);
+    }
 
-         //Get Wind Speed
-         var windP = $("<p>").html("Wind Speed: " + response.wind.speed + " MPH");
-         $("#current-forecast").append(windP);
+    //search current weather
+    function currentWeather(citySearch) {
+        var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + citySearch + "&appid=" + APIKey;
+        $.ajax({
+            type: "GET",
+            url: queryURL,
+            dataType: "json",
+            success: function(data) {
+                //history link for the search
+                if (historySearch.indexOf(citySearch) === -1) {
+                    historySearch.push(citySearch);
+                    window.localStorage.setItem("historySearch", JSON.stringify(historySearch));
 
-         //Get UV Index
-         var lat = response.coord.lat;
-         var lon = response.coord.lon
-         UvIndex(lat, lon);
+                    makeRow(citySearch);
+                }
 
-         //Get 5 days forecast
-         var cityId = response.id;
-         fiveForecast(cityId);
+                //clear previous content from current weather
+                $("#current-forecast").empty();
 
-     })
- };
- //Function for UV index
- function UvIndex(lat, lon) {
-     var UVQueryURL = "https://api.openweathermap.org/data/2.5/uvi?appid=" + APIKey + "&lat=" + lat + "&lon=" + lon;;
-     $.ajax({
-         url: UVQueryURL,
-         method: "GET"
-     }).then(function(response) {
-         var uv = response.value;
-         //Check color for UV, if it's red, UV is very or extreme high, If it's green, UV is low, If it's orange, UV is high
-         if (uv >= 8) {
-             var currentUV = $("<p>").html("UV Index: " + '<span class="uvRed">' + uv + "</span>");
-         } else if (uv <= 5) {
-             var currentUV = $("<p>").html("UV Index: " + '<span class="uvGreen">' + uv + "</span>");
-         } else {
-             var currentUV = $("<p>").html("UV Index: " + '<span class="uvOrange">' + uv + "</span>");
-         }
-         $("#current-forecast").append(currentUV);
-     });
- }
+                //set variable for current day
+                var today = new Date(data.dt * 1000).toLocaleDateString();
 
- //Function for 5 days forecast
- function fiveForecast(cityId) {
-     var forecastURL = "https://api.openweathermap.org/data/2.5/forecast?q=" + cityId + ",us&APPID=" + APIKey;
-     $.ajax({
-         url: forecastURL,
-         method: "GET"
-     }).then(function(response) {
-         for (i = 0; i < 5; i++) {
-             var date = new Date((response.list[((i + 1) * 8) - 1].dt) * 1000).toLocaleDateString();
-             var iconForecast = response.list[((i + 1) * 8) - 1].weather[0].icon;
-             var iconURL = "https://openweathermap.org/img/wn/" + iconForecast + ".png";
-             var tempK = response.list[((i + 1) * 8) - 1].main.temp;
-             var tempF = (((tempK - 273.5) * 1.80) + 32).toFixed(2);
-             var humForecast = response.list[((i + 1) * 8) - 1].main.humidity;
+                //create html for current weather
+                var title = $("<h2>").addClass("card-title").text(data.name + " (" + today + ")");
+                var card = $("<div>").addClass("card");
+                var wind = $("<p>").addClass("card-text").text("Wind Speed: " + data.wind.speed + " MPH");
+                var humid = $("<p>").addClass("card-text").text("Humidity: " + data.main.humidity + "%");
+                var temp = $("<p>").addClass("card-text").text("Temperature: " + data.main.temp + "°F");
+                var cardBody = $("<div>").addClass("card-body");
+                var img = $("<img>").attr("src", "https://openweathermap.org/img/wn/" + data.weather[0].icon + "@2x.png");
 
-             console.log(date);
-             console.log(iconURL);
-             console.log(tempF);
-             console.log(humForecast);
-             //  $("#fiveDayForeCast" + i).html(date);
-             //  $("#fImg" + i).html("<img src=" + iconUrl + ">");
-             //  $("#fTemp" + i).html(tempF + "&#8457");
-             //  $("#fHumidity" + i).html(humForeCast + "%");
-         }
-     });
+                //merge and add to current weather page
+                title.append(img);
+                cardBody.append(title, temp, humid, wind);
+                card.append(cardBody);
+                $("#current-forecast").append(card);
+
+                //Get UV Index
+                var lat = data.coord.lat;
+                var lon = data.coord.lon;
+                var UVQueryURL = "https://api.openweathermap.org/data/2.5/uvi?appid=" + APIKey + "&lat=" + lat + "&lon=" + lon;;
+                $.ajax({
+                    url: UVQueryURL,
+                    method: "GET"
+                }).then(function(data) {
+                    var uv = data.value;
+                    console.log("uv: " + uv)
+                        //Check color for UV, if it's red, UV is very or extreme high, If it's green, UV is low, If it's orange, UV is high
+                    if (uv >= 8) {
+                        var currentUV = $("<p>").addClass("card-text").html("UV Index: " + '<span class="uvRed">' + uv + "</span>");
+                    } else if (uv <= 5) {
+                        var currentUV = $("<p>").addClass("card-text").html("UV Index: " + '<span class="uvGreen">' + uv + "</span>");
+                    } else {
+                        var currentUV = $("<p>").addClass("card-text").html("UV Index: " + '<span class="uvOrange">' + uv + "</span>");
+                    }
+                    cardBody.append(currentUV);
 
 
- }
+                });
 
- //Function for displaying city data in history
- function renderHistory() {
-     //Deleting the search input text prior to add city
-     $("#search-history").empty();
-     for (var i = 0; i < cities.length; i++) {
-         var li = $("<li>");
-         li.addClass("list-group-item");
-         // Adding a data-attribute
-         li.attr("data-name", cities[i]);
-         // Providing the initial search text
-         li.text(cities[i]);
-         // Adding the clicked event to the search history div
-         $("#search-history").append(li);
-     }
- }
+                //Get 5 days Forecast
+                var fiveDayURL = "https://api.openweathermap.org/data/2.5/forecast?q=" + citySearch + "&appid=" + APIKey;
+                //Five day forecast API call
+                $.ajax({
+                    url: fiveDayURL,
+                    method: "GET"
+                }).then(function(response) {
+                    console.log(response);
+                    var forecastList = response.list;
+                    //refresh the page when loading forecast
+                    $("#fiveDayForeCast").empty();
+                    //build html for five day forecasts
+                    //because in forecast five day, each list is increased by 3 hours. 
+                    //therefore, for a new day, need to increase 8 times 3* 8 = 24 hrs
+                    var cardDeck = $("<div>").addClass("card-deck");
+                    for (var i = 4; i < forecastList.length; i += 8) {
+                        //creating a div
+                        var fiveDayCard = $("<div>").addClass("card");
+                        // var fiveDay = new Date(forecastList[i] * 1000).toLocaleDateString();
+                        var fiveDay = moment(forecastList[i].dt_txt.split(" ")[0]).format('DD/MM/YYYY');
+                        var fiveImg = $("<img>").addClass("card-text").attr("src", "https://openweathermap.org/img/wn/" + forecastList[i].weather[0].icon + "@2x.png");
+                        var fiveTemp = $("<p>").addClass("card-text").text("Temp: " + forecastList[i].main.temp + "°F");
+                        var fiveHumid = $("<p>").addClass("card-text").text("Humidity: " + forecastList[i].main.humidity + "%");
+                        console.log(fiveDay);
+                        var dayTitle = $("<h5>").addClass("card-title").text(fiveDay);
+                        fiveDayCard.append(dayTitle, fiveImg, fiveTemp, fiveHumid);
+                        cardDeck.append(fiveDayCard);
+                        $("#fiveDayForeCast").append(cardDeck);
+                        console.log(dayTitle);
+                    }
+                });
 
- //When the Search Button clicked
- $("#add-city").on("click", function(event) {
-     event.preventDefault();
+            }
+        })
+    }
 
-     //This line grabs the input from the textbox
-     var city = $("#city-input").val().trim();
+    //set variable and render for search history
+    var historySearch = JSON.parse(window.localStorage.getItem("historySearch")) || [];
+    console.log("History's Length:", historySearch.length);
 
-     //adding the city input from the textbox to our array
-     cities.push(city);
-     console.log(cities);
+    if (historySearch.length > 0) {
+        currentWeather(historySearch[historySearch.length - 1]);
+    }
+
+    for (var i = 0; i < historySearch.length; i++) {
+        makeRow(historySearch[i]);
+    }
+    //make the history search clickable
+    $("#search-history").on("click", "li", function() {
+        currentWeather($(this).text());
+    });
 
 
-     //calling renderHistory which handles the processing of array
-     renderHistory();
- });
-
- function updateCurrentWeather(data) {
-
- }
-
- //Function for displaying the city info
- $(document).on("click", ".list-group-item", displayCurrentWeather);
-
- renderHistory();
+});
